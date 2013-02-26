@@ -12,6 +12,7 @@
 //       enabled.
 
 void enable_interrupts() {
+    LATAbits.LATA1 = !LATAbits.LATA1;
     // Peripheral interrupts can have their priority set to high or low
     // enable high-priority interrupts and low-priority interrupts
     RCONbits.IPEN = 1;
@@ -99,10 +100,18 @@ void InterruptHandlerHigh() {
         timer0_int_handler();
     }
 
-    // Check for ADC interrupt
-    if (PIR1bits.ADIF) {
-        adcIntHandler();
+    // check to see if we have an interrupt on USART TX
+    if (PIR1bits.TXIF) {
+//        PIR1bits.TXIF = 0;
+     //   TXEN = 0;
+       // uart_send_int_handler();
     }
+
+
+    // Check for ADC interrupt
+    //if (PIR1bits.ADIF) {
+    //    adcIntHandler();
+    //}
 
     // here is where you would check other interrupt flags.
 
@@ -137,9 +146,6 @@ void InterruptHandlerLow() {
         uart_recv_int_handler();
     }
 
-    // check to see if we have an interrupt on USART TX
-    if (PIR1bits.TXIF) {
-        uart_send_int_handler();
     }
-}
+
 

@@ -169,7 +169,7 @@ void main(void) {
     init_timer1_lthread(&t1thread_data);
 
     //Setup ad
-    adcInit();
+//    adcInit();
 
     // initialize message queues before enabling any interrupts
     init_queues();
@@ -282,6 +282,10 @@ void main(void) {
                     break;
                 };
                 case MSGT_I2C_DATA:
+                {
+                    start_UART_send(length, msgbuffer);
+                    break;
+                };
                 case MSGT_I2C_DBG:
                 {
                     // Here is where you could handle debugging, if you wanted
@@ -345,17 +349,17 @@ void main(void) {
                     ADCbufferI2C[2] = msgbuffer[0];
                     ADCBufferLen = 3;
 */
-                    msgbuffer[0] = msgbuffer[0]; // message data
+//                    msgbuffer[0] = msgbuffer[0]; // message data
 //                    msgbuffer[0] = 3; // ADC message type
-                    msgbuffer[1] = 0; // message length
+//                    msgbuffer[1] = 0; // message length
 
-                    FromMainLow_sendmsg(2,MSG_ADC_DATA,msgbuffer);
+//                    FromMainLow_sendmsg(2,MSG_ADC_DATA,msgbuffer);
                 };
                 case MSGT_OVERRUN:
                 case MSGT_UART_DATA:
                 {
-                    //WriteUSART(0x55);
-                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
+                    FromMainLow_sendmsg(length, MSGT_UART_DATA, msgbuffer);
+                    //uart_lthread(&uthread_data, msgtype, length, msgbuffer);
                     break;
                 };
                 default:

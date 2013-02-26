@@ -10,18 +10,24 @@ static uart_comm *uc_ptr;
 
 void start_UART_send(unsigned char len, unsigned char * msg) {
     for (uc_ptr->outbuflen = 0; uc_ptr->outbuflen < len; ++uc_ptr->outbuflen) {
-        uc_ptr->outbuffer[uc_ptr->outbuflen] = msg[uc_ptr->outbuflen];
-    }
-    uc_ptr->outbuflen = len;
+        //uc_ptr->outbuffer[uc_ptr->outbuflen] = msg[uc_ptr->outbuflen];
+        WriteUSART(msg[uc_ptr->outbuflen]);
+        while(BusyUSART());
 
-    uc_ptr->outbufind = 1;
+    }
+    //uc_ptr->outbuflen = len;
+
+    //uc_ptr->outbufind = 1;
 
 #ifdef __USE18F26J50
     Write1USART(uc_ptr->outbuffer[0]);
 #else
-    WriteUSART(uc_ptr->outbuffer[0]);
-#endif
 
+   // WriteUSART(uc_ptr->outbuffer[0]);
+#endif
+    //while(BusyUSART());
+
+//    TXEN = 1;
 }
 
 void uart_recv_int_handler() {
@@ -54,6 +60,7 @@ void uart_recv_int_handler() {
 }
 
 void init_uart_snd_rcv(uart_comm *uc) {
+    INTCONbits.PEIE = 1;
     uc_ptr = uc;
     uc_ptr->buflen = 0;
 
@@ -76,6 +83,6 @@ void uart_send_int_handler(void) {
         WriteUSART(uc_ptr->outbuffer[uc_ptr->outbufind]);
 #endif
         ++uc_ptr->outbufind;
-        INTCONbits.PEIE = 1;
     }
 }
+

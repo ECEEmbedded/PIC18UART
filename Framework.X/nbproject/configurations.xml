@@ -162,7 +162,7 @@
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
         <property key="programoptions.uselvpprogramming" value="false"/>
-        <property key="voltagevalue" value="3.5"/>
+        <property key="voltagevalue" value="5.0"/>
       </PICkit3PlatformTool>
       <XC8-config-global>
       </XC8-config-global>
