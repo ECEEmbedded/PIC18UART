@@ -141,6 +141,7 @@ void main(void) {
     timer0_thread_struct t0thread_data; // info for timer0_lthread
 
 #ifdef __USE18F2680
+
     OSCCON = 0xFC; // see datasheet
     // We have enough room below the Max Freq to enable the PLL for this chip
     OSCTUNEbits.PLLEN = 1; // 4x the clock speed in the previous line
@@ -329,6 +330,15 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_TIMER1:
                 {
+                    msgbuffer[0]=0x4F;
+                    msgbuffer[1]=1;
+                    msgbuffer[2]=0x55;
+                    msgbuffer[3]=0xCC;
+                    msgbuffer[4]=0x55;
+                    msgbuffer[5]=0;
+                    msgbuffer[6]=0;
+                    msgbuffer[7]=0;
+                    start_UART_send(8, msgbuffer);
                     //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     //adcReadyNextRead(0);
                     break;

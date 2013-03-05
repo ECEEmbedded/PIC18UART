@@ -11,8 +11,8 @@ static uart_comm *uc_ptr;
 void start_UART_send(unsigned char len, unsigned char * msg) {
     for (uc_ptr->outbuflen = 0; uc_ptr->outbuflen < len; ++uc_ptr->outbuflen) {
         //uc_ptr->outbuffer[uc_ptr->outbuflen] = msg[uc_ptr->outbuflen];
-        WriteUSART(msg[uc_ptr->outbuflen]);
         while(BusyUSART());
+        WriteUSART(msg[uc_ptr->outbuflen]);
 
     }
     //uc_ptr->outbuflen = len;
