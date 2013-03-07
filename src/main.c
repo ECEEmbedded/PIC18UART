@@ -160,6 +160,9 @@ void main(void) {
 #endif
 #endif
 
+    TRISA = 0x0;
+    LATA = 0x0;
+
     // initialize my uart recv handling code
     init_uart_snd_rcv(&uc);
 
@@ -258,7 +261,6 @@ void main(void) {
     // structure them properly.
 
     while (1) {
-
         // Call a routine that blocks until either on the incoming
         // messages queues has a message (this may put the processor into
         // an idle mode)
@@ -330,17 +332,18 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_TIMER1:
                 {
-                    msgbuffer[0]=0x4F;
-                    msgbuffer[1]=1;
+                    // DEBUG
+                    msgbuffer[0]=0x55;
+                    msgbuffer[1]=0x55;
                     msgbuffer[2]=0x55;
-                    msgbuffer[3]=0xCC;
-                    msgbuffer[4]=0x55;
-                    msgbuffer[5]=0;
-                    msgbuffer[6]=0;
-                    msgbuffer[7]=0;
+                    msgbuffer[3]=0x55;
+                    msgbuffer[4]=0xAA;
+                    msgbuffer[5]=0xAA;
+                    msgbuffer[6]=0xAA;
+                    msgbuffer[7]=0xAA;
                     start_UART_send(8, msgbuffer);
+                    // END DEBUG
                     //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
-                    //adcReadyNextRead(0);
                     break;
                 };
                 case MSG_ADC_DATA:

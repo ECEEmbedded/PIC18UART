@@ -10,24 +10,16 @@ static uart_comm *uc_ptr;
 
 void start_UART_send(unsigned char len, unsigned char * msg) {
     for (uc_ptr->outbuflen = 0; uc_ptr->outbuflen < len; ++uc_ptr->outbuflen) {
-        //uc_ptr->outbuffer[uc_ptr->outbuflen] = msg[uc_ptr->outbuflen];
-        while(BusyUSART());
-        WriteUSART(msg[uc_ptr->outbuflen]);
-
+        uc_ptr->outbuffer[uc_ptr->outbuflen] = msg[uc_ptr->outbuflen];
     }
-    //uc_ptr->outbuflen = len;
 
-    //uc_ptr->outbufind = 1;
+    uc_ptr->outbufind = 0;
 
 #ifdef __USE18F26J50
     Write1USART(uc_ptr->outbuffer[0]);
 #else
-
-   // WriteUSART(uc_ptr->outbuffer[0]);
+    PIE1bits.TXIE = 1;
 #endif
-    //while(BusyUSART());
-
-//    TXEN = 1;
 }
 
 void uart_recv_int_handler() {
@@ -61,17 +53,21 @@ void uart_recv_int_handler() {
 
 void init_uart_snd_rcv(uart_comm *uc) {
     INTCONbits.PEIE = 1;
+    PIE1bits.TXIE = 1;
+    TXSTAbits.TXEN = 1;
     uc_ptr = uc;
     uc_ptr->buflen = 0;
 
-    // configure the hardware USART device
-#ifdef __USE18F26J50
-    Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 0x19);
-#else
-    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-            USART_CONT_RX & USART_BRGH_LOW, 0x19);
-#endif
+//    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
+//            USART_CONT_RX & USART_BRGH_LOW, 0x19);
+    RCSTAbits.SPEN = 1;
+    TRISCbits.TRISC7 = 1; // Tx = output pin
+    TRISCbits.TRISC6 = 0; // Rx = input pin
+    TXSTAbits.BRGH = 1;
+    BAUDCONbits.BRG16 = 0;
+    SPBRG = 0x65;
+    TXSTAbits.SYNC = 0;
+    RCSTAbits.SPEN = 1;
 }
 
 
@@ -80,9 +76,12 @@ void uart_send_int_handler(void) {
 #ifdef __USE18F26J50
         Write1USART(uc_ptr->outbuffer[uc_ptr->outbufind]);
 #else
-        WriteUSART(uc_ptr->outbuffer[uc_ptr->outbufind]);
+        TXREG = uc_ptr->outbuffer[uc_ptr->outbufind];
 #endif
         ++uc_ptr->outbufind;
+    }
+    else { // End of message
+        PIE1bits.TXIE = 0;
     }
 }
 
