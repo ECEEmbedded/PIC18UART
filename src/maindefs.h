@@ -29,6 +29,11 @@
 #include <p18cxxx.h>
 #endif
 
+// I2C addresses
+#define I2C_IR_ADDRESS      0x4F
+#define I2C_MOTOR_ADDRESS   0x3A
+#define I2C_COLOR_ADDRESS  0x74
+
 // Message type definitions
 #define MSGT_TIMER0 10
 #define MSGT_TIMER1 11
@@ -38,11 +43,6 @@
 #define MSGT_I2C_DBG 41
 #define	MSGT_I2C_DATA 40
 #define MSGT_I2C_RQST 42
-#define MSGT_I2C_MASTER_SEND_COMPLETE 43
-#define MSGT_I2C_MASTER_SEND_FAILED 44
-#define MSGT_I2C_MASTER_RECV_COMPLETE 45
-#define MSGT_I2C_MASTER_RECV_FAILED 46
-#define MSG_ADC_DATA 50
 
 #endif
 

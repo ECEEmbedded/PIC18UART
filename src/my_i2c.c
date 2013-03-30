@@ -10,51 +10,6 @@ static i2c_comm *ic_ptr;
 
 static unsigned char requested_adr;
 
-#ifdef IS_I2C_MASTER
-// Configure for I2C Master mode -- the variable "slave_addr" should be stored in
-//   i2c_comm (as pointed to by ic_ptr) for later use.
-
-void i2c_configure_master(unsigned char slave_addr) {
-    // Your code goes here
-}
-
-// Sending in I2C Master mode [slave write]
-// 		returns -1 if the i2c bus is busy
-// 		return 0 otherwise
-// Will start the sending of an i2c message -- interrupt handler will take care of
-//   completing the message send.  When the i2c message is sent (or the send has failed)
-//   the interrupt handler will send an internal_message of type MSGT_MASTER_SEND_COMPLETE if
-//   the send was successful and an internal_message of type MSGT_MASTER_SEND_FAILED if the
-//   send failed (e.g., if the slave did not acknowledge).  Both of these internal_messages
-//   will have a length of 0.
-// The subroutine must copy the msg to be sent from the "msg" parameter below into
-//   the structure to which ic_ptr points [there is already a suitable buffer there].
-
-unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
-    // Your code goes here
-    return(0);
-}
-
-// Receiving in I2C Master mode [slave read]
-// 		returns -1 if the i2c bus is busy
-// 		return 0 otherwise
-// Will start the receiving of an i2c message -- interrupt handler will take care of
-//   completing the i2c message receive.  When the receive is complete (or has failed)
-//   the interrupt handler will send an internal_message of type MSGT_MASTER_RECV_COMPLETE if
-//   the receive was successful and an internal_message of type MSGT_MASTER_RECV_FAILED if the
-//   receive failed (e.g., if the slave did not acknowledge).  In the failure case
-//   the internal_message will be of length 0.  In the successful case, the
-//   internal_message will contain the message that was received [where the length
-//   is determined by the parameter passed to i2c_master_recv()].
-// The interrupt handler will be responsible for copying the message received into
-
-unsigned char i2c_master_recv(unsigned char length) {
-    // Your code goes here
-    return(0);
-}
-
-#endif
-
 void start_i2c_slave_reply(/*unsigned char length, unsigned char *msg*/) {
 
     unsigned char msgType;
@@ -63,9 +18,12 @@ void start_i2c_slave_reply(/*unsigned char length, unsigned char *msg*/) {
     len = FromMainLow_recvmsg(MSGLEN, &msgType, ic_ptr->outbuffer);
 
     if (len == MSGQUEUE_EMPTY) {
-        ic_ptr->outbuflen = 2;
-        ic_ptr->outbuffer[0] = 0;
-        ic_ptr->outbuffer[1] = 0;
+        ic_ptr->outbuflen = 8;
+        ic_ptr->outbuffer[0] = 0x4F;
+        
+        unsigned char i;
+        for (i = 1; i < 8; ++i)
+          ic_ptr->outbuffer[i] = 0;
     }
     else {
         ic_ptr->outbuflen = len;
@@ -299,8 +257,8 @@ void i2c_configure_slave(unsigned char addr) {
 
     // ensure the two lines are set for input (we are a slave)
 #ifdef __USE18F26J50
-    PORTBbits.SCL1 = 1;
-    PORTBbits.SDA1 = 1;
+    TRISBbits.TRISB4 = 1;
+    TRISBbits.TRISB5 = 1;
 #else
     TRISCbits.TRISC3 = 1;
     TRISCbits.TRISC4 = 1;
@@ -334,10 +292,4 @@ void i2c_configure_slave(unsigned char addr) {
     SSPCON2bits.SEN = 1;
     SSPCON1 |= SSPENB;
     // end of i2c configure
-
-    // register clearing
-    int i;
-    for (i = 0; i < I2C_REG_COUNT; ++i) {
-        i2c_addressable_registers[i].length = 0;
-    }
 }

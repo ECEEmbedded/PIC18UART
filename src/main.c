@@ -124,9 +124,6 @@ Something is messed up
 #endif
 
 void main(void) {
-    //Tmp Code
-    unsigned char ADCbufferI2C[8];
-    unsigned char ADCBufferLen;
 
     char c;
     signed char length;
@@ -309,7 +306,7 @@ void main(void) {
 /*                    i2cmsg *tmpPtr = i2c_addressable_registers + 2;//(last_reg_recvd - 0xA8);
                     start_i2c_slave_reply(tmpPtr->length, tmpPtr->data);
 */
-                    start_i2c_slave_reply(ADCBufferLen, ADCbufferI2C);
+                    //start_i2c_slave_reply();
 
                     break;
                 };
@@ -345,28 +342,6 @@ void main(void) {
                     // END DEBUG
                     //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     break;
-                };
-                case MSG_ADC_DATA:
-                {
-                    //unsigned short adcOutput = ((int)msgbuffer[1] << 8) | (int)msgbuffer[0];
-
-                    //int k = adcOutput;
-/*                    i2c_addressable_registers[2].data[0] = 3; // msgtype. 0xAA is ADC message
-                    i2c_addressable_registers[2].data[1] = 1;
-                    i2c_addressable_registers[2].data[2] = msgbuffer[0];
-//                    i2c_addressable_registers[2].data[3] = msgbuffer[1];
-                    i2c_addressable_registers[2].length = 3;
-*/
-/*                    ADCbufferI2C[0] = 3;
-                    ADCbufferI2C[1] = 1;
-                    ADCbufferI2C[2] = msgbuffer[0];
-                    ADCBufferLen = 3;
-*/
-//                    msgbuffer[0] = msgbuffer[0]; // message data
-//                    msgbuffer[0] = 3; // ADC message type
-//                    msgbuffer[1] = 0; // message length
-
-//                    FromMainLow_sendmsg(2,MSG_ADC_DATA,msgbuffer);
                 };
                 case MSGT_OVERRUN:
                 case MSGT_UART_DATA:
