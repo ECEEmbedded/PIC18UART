@@ -118,7 +118,7 @@
 // CONFIG4H
 #pragma config WPDIS = OFF      // Write Protect Disable bit (WPFP<5:0>/WPEND region ignored)
 #else
-Something is messed up
+//Something is messed up,this is a comment 
 #endif
 #endif
 #endif
